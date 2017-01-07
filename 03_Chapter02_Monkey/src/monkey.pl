@@ -12,9 +12,9 @@ move(state(P1, on_floor, B, H),
 	go_to(P1, P2), 
 	state(P2, on_floor, B, H)).
 
-can_have(state(_, _, _, have).
+can_have(state(_, _, _, have)).
 
 can_have(P1) :-
-	move(P1, Move, P2),
+	move(P1, _Move, P2),
 	can_have(P2).
 	
