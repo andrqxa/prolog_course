@@ -1,0 +1,7 @@
+# Both of these can be overridden on the command line.
+#
+PROGRAM_NAME = family
+PROGRAM_EXT = .exe # empty on Linux
+MMC = mercury.bat
+INSTALL_PREFIX = ../target
+MERC_FOLDER = Mercury
