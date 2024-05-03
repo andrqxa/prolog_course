@@ -1,6 +1,4 @@
-*~
-*.log
-bin/
-*/bin/
-RemoteSystemsTempFiles/
-.metadata/
+**/target/
+**/*.dll
+**/*.exe
+**/*.a
