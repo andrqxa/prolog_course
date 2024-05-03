@@ -8,25 +8,36 @@
 :- module family.
 :- interface.
 
-:- import_module io, string.
+:- import_module io.
 
 %-----------------------------------------------------------------------------%
 
-:- pred main(io::di, io::uo) is cc_multi.
+:- pred main(io::di, io::uo) is det.
 
-:- pred parent(string::in, string::in) is semidet.
+:- pred parent(string, string).
+:- mode parent(in, out) is nondet.
+:- mode parent(out, in) is nondet.
 
-:- pred handle_input(string::in, io::di, io::uo) is cc_multi.
+:- pred sister(string, string).
+:- mode sister(in, out) is nondet.
+:- mode sister(out, in) is nondet.
 
-:- pred write_output(string::in, io::di, io::uo) is det.
+:- pred woman(string::in) is semidet.
+:- pred man(string::in) is semidet.
+:- pred child(string::in, string::in) is semidet.
+:- pred mother(string::in, string::in) is semidet.
+:- pred parent_of_parent(string::in, string::in) is semidet.
 
-:- pred repl(io::di, io::uo) is cc_multi.
+:- pred happy(string::in) is semidet.
+:- pred has_2_child(string::in) is semidet.
+:- pred grandson(string::in, string::in) is semidet.
+:- pred aunt(string::in, string::in) is semidet.
+
 %-----------------------------------------------------------------------------%
 %-----------------------------------------------------------------------------%
 
 :- implementation.
 
-:- import_module list.
 %-----------------------------------------------------------------------------%
 
 % Family facts
@@ -37,59 +48,58 @@ parent("bob", "ann").
 parent("bob", "pat").
 parent("pat", "jim").
 
+woman("pam").
+woman("liz").
+woman("pat").
+woman("ann").
+man("jim").
+man("tom").
+man("bob").
 
+% Family rules
+child(X, Y) :-
+	parent(Y, X).
+
+mother(X, Y) :-
+	parent(X, Y),
+	woman(X).
+
+parent_of_parent(X, Y) :-
+	parent(X, Z),
+	parent(Z, Y).
+
+sister(X, Y) :-
+	parent(Z, X),
+	parent(Z, Y),
+	woman(X),
+	X \= Y.
+
+happy(X) :-
+	parent(X, _).
+
+has_2_child(X) :-
+	parent(X, Y),
+	sister(_, Y).
+
+grandson(X, Y) :-
+	parent(Y, Z),
+	parent(Z, X),
+	man(X).
+
+aunt(X, Y) :-
+	parent(Z, Y),
+	sister(X, Z).
 
 %-----------------------------------------------------------------------------%
 
 % Main function for running
 main(!IO) :-
-	io.write_string("Enter a query or press Ctrl-Z to exit:\n", !IO),
-	repl(!IO).
-
-%:- pred repl(io::di, io::uo) is det.
-
-write_output(Message, !IO) :-
-    io.write_string(Message, !IO).
-
-repl(!IO) :-
-	io.read_line_as_string(ReadResult, !IO),
-	(
-		ReadResult = ok(Query),
-		handle_input(Query, !IO),
-		repl(!IO)
-	;
-		ReadResult = eof,
-		write_output("Goodbye!\n", !IO)
-	;
-		ReadResult = error(Error),
-		write_output(string.format("Error reading input: %s\n", [s(io.error_message(Error))]), !IO)
-	).
-
-handle_input(Query, !IO) :-
-	Words = string.words(Query),
-	(
-		Words = [Parent, Child],
-		(
-			parent(Parent, Child) ->
-				write_output(string.format("%s is a parent of %s.\n", [s(Parent), s(Child)]), !IO)
-			;
-				write_output(string.format("%s is not a parent of %s.\n", [s(Parent), s(Child)]), !IO)
-		)
-	;
-		Words = [],
-		write_output("Please enter a valid query.\n", !IO)
-	;
-		Words = _,
-		write_output("Unsupported query format.\n", !IO)
-	).
+	( if sister("pam", "ann") then
+        io.write_string("Pam is a sister of Ann.\n", !IO)
+    else
+        io.write_string("Pam is not a sister of Ann.\n", !IO)
+    ).
 
 %-----------------------------------------------------------------------------%
 :- end_module family.
 %-----------------------------------------------------------------------------%
-
-
-
-
-
-
-
